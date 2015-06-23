@@ -2,7 +2,7 @@ require 'rest-client'
 require 'nokogiri'
 require 'json'
 require 'date'
-require 'sendgrid-ruby'
+#require 'sendgrid-ruby'
 
 start = Time.now
 
@@ -18,6 +18,10 @@ candiUrls.each {|url|
 	@candis.each{|candi| candidates << candi.gsub("’","")}
 }
 
+puts candidates
+
+
+
 #Pages we want scraped
 @pages = [0,10,20,30]#,40,50,60
 #Date we want count for
@@ -31,7 +35,8 @@ candidates.each {|candidate|
 	@hsh["stories"] = []
 	
 	@pages.each_with_index {|page, i|
-		furl = "http://api.foxnews.com/v1/content/search?q=#{candidate}&fields=date,title,url,taxonomy&section.path=fnc&sort=latest&start=#{page}&callback=angular.callbacks._0"
+		furl = "http://api.foxnews.com/v1/content/search?q=#{candidate.gsub(" ","%20")}&fields=date,title,url,taxonomy&section.path=fnc&sort=latest&start=#{page}&callback=angular.callbacks._0"
+        
 		fresp = RestClient.get(furl, 'User-Agent' => 'Ruby')
 		fpage = Nokogiri::HTML(fresp)
 
@@ -73,11 +78,11 @@ html += "<p><center>******<br>About this email:</center></p>
 				*Candidates found: http://www.2016election.com/ </p>"
 html += "</body></html>"
 
-#puts html
+puts html
 #puts "/Users/nSmith/Desktop/ELECTION_MASTER/Daily_HTML/#{@dateFor}.html"
 
 
-
+=begin
 #send email
 client = SendGrid::Client.new(api_user: "nSmoth", api_key: "nick3141")
 
@@ -90,6 +95,6 @@ end
 
 client.send(email)
 
-=begin
+
 =end
 puts "Script took #{start - Time.now} seconds to run"
